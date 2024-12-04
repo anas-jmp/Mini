@@ -25,6 +25,11 @@ typedef enum {
     HERE_DOC
 } token_type;
 
+typedef struct s_parser_state {
+    const char **str; // Input string pointer
+    char **env;       // Environment variables
+    int status;       // Status for variable expansion (e.g., last exit code)
+} t_parser_state;
 
 typedef struct token 
 {
@@ -40,16 +45,24 @@ typedef struct s_env
     struct s_env *next;
 } t_env;
 
+char **handle_env(t_env *env_list);
+void handle_command_name(token **tokens, t_command *cmd);
+void append_command(t_command **head, t_command **current, t_command *cmd);
+char *next_tok_par(const char *start,const char **str,char **env, token_type *type);
+char *next_tok_par1(const char *start,const char **str,char **env,int *status ,token_type *type);
+char *next_tok_par2(const char *start,const char **str,char **env,int *status ,token_type *type);
+char *next_tok_par3(const char *start,const char **str,char **env,int *status ,token_type *type);
+
+
 // char *handle_echo_command(char *input, char **env);
   char	*ft_itoa(int nb);
 // pid_t ending_child_processe(t_command *prompt , char *cmd_path , char **argv , int **pipefd , char **env , int j );
 void display_ascii_art(void);
- char *expand_variable(char *var_name, char **env,int *status);
+ char *expand_variable(char *var_name, char **env);
 int validate_syntax(token *tokens);
 void echo_exit_status(const char *input);
 int check_unmatched_quotes(char *input);
-char **handle_env(const char *str, t_env *env_list); 
-char *next_token(const char **str, char **env, token_type *type);
+ char *next_token(const char **str, char **env, token_type *type);
 extern t_env *env_list;
 /******************************************/
 char  *get_redirection_file(const char *command);
@@ -61,7 +74,7 @@ void  execute_env_command(t_env *env_list, const char *output_file);
 /**********************************************/
 void split_key_value(char *input, char **key, char **value);
 void handle_unset(const char *key); 
-void handle_export_command(char *input, char **env);
+void handle_export_command(char *input);
 void store_env_variable(char *key, char *value);
 void free_command(t_command *cmd);
 char *handle_quoted_string_with_expansion(char *str, char **env);
