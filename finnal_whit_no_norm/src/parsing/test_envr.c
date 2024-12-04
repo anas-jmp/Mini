@@ -6,7 +6,7 @@
 // Access the environment
 extern char **environ;
 
-char **handle_env(const char *str, t_env *env_list)
+char **handle_env(t_env *env_list)
 {
     extern char **environ;
     t_env *current = env_list;
