@@ -224,7 +224,8 @@ num = ft_itoa(*status);
   store_env_variable("?",num);
 }
 
-int pipex(t_command *prompt, char **env) {
+int pipex(t_command *prompt, char **env) 
+{
   int i;
   int j;
   char *cmd_path;
@@ -235,8 +236,8 @@ int pipex(t_command *prompt, char **env) {
   int final_status;
   int lst_size;
   int fd;
-  char *str=NULL;
-  char **my_env = handle_env(str, env_list);
+
+   char **my_env = handle_env( env_list);
     env = my_env;
 
   if (!prompt)
