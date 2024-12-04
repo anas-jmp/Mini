@@ -6,6 +6,7 @@
 #define INITIAL_ARGS_SIZE 16
 // #define INITIAL_ARGS_SIZE 1024  // Adjust this later if necessary
 
+
 void free_command(t_command *cmd) {
   if (cmd) {
     free(cmd->command);
