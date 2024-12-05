@@ -6,6 +6,7 @@
 #define INITIAL_ARGS_SIZE 16
 // #define INITIAL_ARGS_SIZE 1024  // Adjust this later if necessary
 
+
 void free_command(t_command *cmd) {
   if (cmd) {
     free(cmd->command);
@@ -83,167 +84,6 @@ char **resize_args(char **old_args, int old_size, int new_size)
   free(old_args);  // Free the old array
   return new_args; // Return the new and resized array
 }
-// int handle_command_and_arguments(token **tokens, t_command *cmd, char **env, int *arg_count, int *max_args, int *status)
-// {
-//     if (!cmd->command && ((*tokens)->token_type == WORD ||
-//                           (*tokens)->token_type == DOUBLE_QUOTED_STRING ||
-//                           (*tokens)->token_type == SINGLE_QUOTED_STRING)) 
-//     {
-//         cmd->command = strdup((*tokens)->value);
-//         cmd->args[(*arg_count)++] = strdup(cmd->command);
-//         *tokens = (*tokens)->next;
-//         return 1;
-//     }
-
-//     if ((*tokens)->token_type == WORD ||
-//         (*tokens)->token_type == DOUBLE_QUOTED_STRING ||
-//         (*tokens)->token_type == SINGLE_QUOTED_STRING) 
-//     {
-//         char *arg_value = (*tokens)->value;
-
-//         // Handle variable expansion
-//         if (arg_value[0] == '$') expand_variable
-//         {
-//             char *var_name = arg_value + 1; // Skip the '$'
-//             char *expanded_value = expand_variable(var_name, env);
-//             if (expanded_value) 
-//                 arg_value = expanded_value;
-//         }
-
-//         // Resize arguments array if necessary
-//         if (*arg_count >= *max_args - 1) 
-//         {
-//             *max_args *= 2;
-//             cmd->args = resize_array(cmd->args, *arg_count, *max_args);
-//             if (!cmd->args) 
-//                 return 0;
-//         }
-
-//         cmd->args[(*arg_count)++] = strdup(arg_value);
-//         *tokens = (*tokens)->next;
-//     }
-
-//     return 1;
-// }
-
-
-// int handle_input_redirection(token **tokens, t_command *cmd, int *input_count, int *max_inputs)
-// {
-//     *tokens = (*tokens)->next;
-//     if (*tokens && ((*tokens)->token_type == WORD ||
-//                     (*tokens)->token_type == DOUBLE_QUOTED_STRING ||
-//                     (*tokens)->token_type == SINGLE_QUOTED_STRING)) 
-//     {
-//         if (*input_count >= *max_inputs - 1) 
-//         {
-//             *max_inputs *= 2;
-//             cmd->input_redirect = resize_array(cmd->input_redirect, *input_count, *max_inputs);
-//             if (!cmd->input_redirect) 
-//                 return 0;
-//         }
-//         cmd->input_redirect[(*input_count)++] = strdup((*tokens)->value);
-//         *tokens = (*tokens)->next;
-//         cmd->herdoc_last = 0;
-//         return 1;
-//     }
-
-//     printf("\nError: No file specified for input redirection\n");
-//     return 0;
-// }
-
-// int handle_output_redirection(token **tokens, t_command *cmd, int *output_count, int *max_outputs)
-// {
-//     int append = ((*tokens)->token_type == OUTPUT_REDIRECTION_APPEND_MODE);
-//     *tokens = (*tokens)->next;
-
-//     if (*tokens && ((*tokens)->token_type == WORD ||
-//                     (*tokens)->token_type == DOUBLE_QUOTED_STRING ||
-//                     (*tokens)->token_type == SINGLE_QUOTED_STRING)) 
-//     {
-//         if (*output_count >= *max_outputs - 1) 
-//         {
-//             *max_outputs *= 2;
-//             cmd->output_redirect = resize_array(cmd->output_redirect, *output_count, *max_outputs);
-//             cmd->append_modes = resize_int_array(cmd->append_modes, *output_count, *max_outputs);
-//             if (!cmd->output_redirect || !cmd->append_modes) 
-//                 return 0;
-//         }
-//         cmd->output_redirect[(*output_count)] = strdup((*tokens)->value);
-//         cmd->append_modes[(*output_count)++] = append; // Increment output_count
-//         *tokens = (*tokens)->next;
-//         return 1;
-//     }
-
-//     printf("\nError: No file specified for output redirection\n");
-//     return 0;
-// }
-
-// int handle_heredoc(token **tokens, t_command *cmd, int *heredoc_count, int *max_heredocs)
-// {
-//     *tokens = (*tokens)->next;
-
-//     if (*tokens && ((*tokens)->token_type == WORD ||
-//                     (*tokens)->token_type == DOUBLE_QUOTED_STRING ||
-//                     (*tokens)->token_type == SINGLE_QUOTED_STRING)) 
-//     {
-//         if (*heredoc_count >= *max_heredocs - 1) 
-//         {
-//             *max_heredocs *= 2;
-//             cmd->here_docs = resize_array(cmd->here_docs, *heredoc_count, *max_heredocs);
-//             if (!cmd->here_docs) 
-//                 return 0;
-//         }
-//         cmd->here_docs[(*heredoc_count)++] = strdup((*tokens)->value);
-//         *tokens = (*tokens)->next;
-//         cmd->herdoc_last = 1;
-//         return 1;
-//     }
-
-//     printf("\nError: No file specified for heredoc redirection\n");
-//     return 0;
-// }
-t_command *init_command()
-{
-    t_command *cmd = malloc(sizeof(t_command));
-    if (!cmd)
-        return NULL;
-
-    cmd->command = NULL;
-    cmd->args = malloc(INITIAL_ARGS_SIZE * sizeof(char *));
-    cmd->input_redirect = malloc(INITIAL_REDIRECT_SIZE * sizeof(char *));
-    cmd->output_redirect = malloc(INITIAL_REDIRECT_SIZE * sizeof(char *));
-    cmd->here_docs = malloc(INITIAL_REDIRECT_SIZE * sizeof(char *));
-    cmd->append_modes = malloc(INITIAL_REDIRECT_SIZE * sizeof(int));
-    cmd->herdoc_last = 0;
-    cmd->here_doc_last_fd = 0;
-    cmd->next = NULL;
-
-    if (!cmd->here_docs || !cmd->args || !cmd->input_redirect || !cmd->output_redirect || !cmd->append_modes) 
-    {
-        free_command(cmd); // Free allocated memory in case of failure
-        return NULL;
-    }
-
-    return cmd;
-}
-
-t_counters *init_counters()
-{
-    t_counters *counters = malloc(sizeof(t_counters));
-    if (!counters)
-        return NULL;
-
-    counters->arg_count = 0;
-    counters->max_args = INITIAL_ARGS_SIZE;
-    counters->input_count = 0;
-    counters->max_inputs = INITIAL_REDIRECT_SIZE;
-    counters->output_count = 0;
-    counters->max_outputs = INITIAL_REDIRECT_SIZE;
-    counters->heredoc_count = 0;
-    counters->max_heredocs = INITIAL_REDIRECT_SIZE;
-
-    return counters;
-}
 
 
 t_command *parse_command(token *tokens, char **env)
@@ -280,29 +120,26 @@ t_command *parse_command(token *tokens, char **env)
     int output_count = 0, max_outputs = INITIAL_REDIRECT_SIZE;
     int heredoc_count = 0, max_heredocs = INITIAL_REDIRECT_SIZE;
     while (tokens && tokens->token_type != PIPES) 
-    { 
-         printf("\n1\n");
+    {
       // Handle command name
-      if (!cmd->command && (tokens->token_type == WORD || tokens->token_type == DOUBLE_QUOTED_STRING || tokens->token_type == SINGLE_QUOTED_STRING))
-      {
-              cmd->command = strdup(tokens->value);
-              cmd->args[arg_count++] = strdup(cmd->command);
-              tokens = tokens->next;
-              continue;
+      if (!cmd->command && (tokens->token_type == WORD ||
+                            tokens->token_type == DOUBLE_QUOTED_STRING ||
+                            tokens->token_type == SINGLE_QUOTED_STRING)) {
+        cmd->command = strdup(tokens->value);
+        cmd->args[arg_count++] = strdup(cmd->command);
+        tokens = tokens->next;
+        continue;
       }
 
                //    printf("\n<<<<<<<<<<<<<<<here_2>>>>>>>>>>>>>>>>\n");
               //     single-quoted strings (no expansion)
             if (tokens->token_type == SINGLE_QUOTED_STRING)
             {
-                       printf("\n@@\n");
                 // Add as-is to the arguments
                 cmd->args[arg_count++] = strdup(tokens->value);
                 tokens = tokens->next;
                 continue;
             }
-
-            printf("\n2\n");
       // Handle arguments and handle redirection
       if (tokens->token_type == WORD ||
           tokens->token_type == DOUBLE_QUOTED_STRING ||
@@ -334,7 +171,6 @@ t_command *parse_command(token *tokens, char **env)
       // Handle input redirection
       else if (tokens->token_type == INPUT_REDIRECTION) 
       {
-                    printf("\n3\n");
         tokens = tokens->next;
         if (tokens && (tokens->token_type == WORD ||
                        tokens->token_type == DOUBLE_QUOTED_STRING ||
@@ -358,8 +194,8 @@ t_command *parse_command(token *tokens, char **env)
       }
 
       // Handle output redirection
-      else if (tokens->token_type == OUTPUT_REDIRECTION || tokens->token_type == OUTPUT_REDIRECTION_APPEND_MODE)
-                {            printf("\n4\n");
+      else if (tokens->token_type == OUTPUT_REDIRECTION ||
+               tokens->token_type == OUTPUT_REDIRECTION_APPEND_MODE) {
         int append = (tokens->token_type == OUTPUT_REDIRECTION_APPEND_MODE);
         tokens = tokens->next;
         if (tokens && (tokens->token_type == WORD ||
@@ -384,9 +220,7 @@ t_command *parse_command(token *tokens, char **env)
           return NULL;
         }
       } 
-      else if (tokens->token_type == HERE_DOC) 
-      {
-                    printf("\n5\n");
+      else if (tokens->token_type == HERE_DOC) {
         tokens = tokens->next;
         if (tokens && (tokens->token_type == WORD ||
                        tokens->token_type == DOUBLE_QUOTED_STRING ||
