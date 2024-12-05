@@ -6,6 +6,8 @@ t_env *env_list = NULL;  // Initialize the custom environment list
  
 void split_key_value(char *input, char **key, char **value) 
 {
+      *key = NULL;
+    *value = NULL;
   char *equal_sign = strchr(input, '=');
   if (equal_sign) {
     int key_len = equal_sign - input;
@@ -47,6 +49,8 @@ char *remove_quotes(const char *input)
 
 void split_key_value_with_quotes(const char *input, char **key, char **value)
  {
+    *key = NULL;
+    *value = NULL;
     char *equal_sign = strchr(input, '=');
     if (equal_sign) {
         size_t key_len = equal_sign - input;
@@ -95,9 +99,17 @@ int is_valid_identifier(const char *key)
 void store_env_variable(char *key, char *value) 
 {
     t_env *current = env_list;
-
+    if (!key) {
+        printf("Error: key is NULL\n");
+        return;
+    }
+    if (!value){
+        printf("Error: key is NULL\n");
+        return;
+    }
      while (current) {
-        if (strcmp(current->key, key) == 0) {
+        if (strcmp(current->key, key) == 0)
+        {
             free(current->value); 
             if (value) {
                 current->value = strdup(value);  
@@ -117,23 +129,26 @@ void store_env_variable(char *key, char *value)
 
     new_env->key = strdup(key);
 
-    if (value) {
+    if (value) 
+    {
         new_env->value = strdup(value);  
-    } else {
+    }
+    else
+    {
         new_env->value = NULL; 
     }
 
     new_env->next = env_list;
     env_list = new_env;
 
-//     if (value) 
-//     {
-//         printf("Stored vari@@@@@able: %s=%s\n", key, value); 
-//     } 
-//     else 
-//      {
-//         printf("Stored variable: %s=NULL\n", key);
-//    }
+    if (value) 
+    {
+        printf("Stored vari@@@@@able: %s=%s\n", key, value); 
+    } 
+    else 
+     {
+        printf("Stored variable: %s=NULL\n", key);
+    }
 }
 
 char *get_next_token(const char *input, size_t *start)
@@ -166,6 +181,7 @@ char *get_next_token(const char *input, size_t *start)
 
 void handle_export_command(char *input)
 {
+    printf("\n#exprt#\n");
     size_t pos = 0; // Start position for tokenization
     char *token;
 
@@ -175,15 +191,20 @@ void handle_export_command(char *input)
         char *value = NULL;
 
         split_key_value_with_quotes(token, &key, &value);
-
+        
+        printf("\n#exprt coco#\n");
+        
         if (key && is_valid_identifier(key))
         {
+                    printf("\n#exprt coco2#\n");
             if (value) 
             {
+                printf("\n#exprt coco3#\n");
                 store_env_variable(key, value);  
             }
             else
-            {
+            { 
+                printf("\n#exprt coco#\n");
                 store_env_variable(key, NULL);  
             }
         }
