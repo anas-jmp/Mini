@@ -76,6 +76,8 @@ void handle_unset(const char *key)
 {
     t_env *current = env_list;
     t_env *previous = NULL;
+       
+        printf("\nok___unseting  2\n");
 
     while (current)
      {
